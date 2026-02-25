@@ -72,6 +72,120 @@
   }
   .nav-links a:hover { color: var(--accent); }
 
+  /* HAMBURGER */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+    z-index: 201;
+  }
+  .hamburger span {
+    display: block;
+    height: 1px;
+    background: var(--text);
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    transform-origin: center;
+  }
+  .hamburger span:nth-child(1) { width: 26px; }
+  .hamburger span:nth-child(2) { width: 18px; }
+  .hamburger span:nth-child(3) { width: 22px; }
+  .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); width: 24px; }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); width: 24px; }
+
+  /* DRAWER OVERLAY */
+  .drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .drawer-overlay.visible { opacity: 1; pointer-events: all; }
+
+  /* DRAWER */
+  .drawer {
+    position: fixed;
+    top: 0; right: 0;
+    width: min(300px, 82vw);
+    height: 100%;
+    background: #0e0e0e;
+    border-left: 1px solid var(--border);
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.8rem;
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .drawer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .drawer-close {
+    background: none; border: none;
+    color: var(--muted); font-size: 1.1rem;
+    cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .drawer-close:hover { color: var(--accent); }
+
+  .drawer-nav { display: flex; flex-direction: column; }
+  .drawer-nav a {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.25s, padding-left 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .drawer-nav a::before {
+    content: '';
+    display: block;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+    flex-shrink: 0;
+  }
+  .drawer-nav a:hover { color: var(--accent); padding-left: 0.4rem; }
+  .drawer-nav a:hover::before { width: 18px; }
+
+  .drawer-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
   /* HERO */
   .hero {
     min-height: 100vh;
@@ -503,18 +617,19 @@
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
-    nav { padding: 1.2rem 2rem; }
-    .nav-links { gap: 1.5rem; }
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
     .hero { grid-template-columns: 1fr; }
     .hero-right { display: none; }
-    .hero-left { padding: 7rem 2rem 5rem; }
-    .container { padding: 0 2rem; }
+    .hero-left { padding: 7rem 1.5rem 5rem; }
+    .container { padding: 0 1.5rem; }
     .expertise-grid { grid-template-columns: 1fr; }
     .stack-grid { grid-template-columns: repeat(2, 1fr); }
     .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
     .project-item { grid-template-columns: 1fr; }
     .project-arrow { display: none; }
-    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
   }
 </style>
 </head>
@@ -529,7 +644,26 @@
     <a href="#stack">Stack</a>
     <a href="#contato">Contato</a>
   </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-top">
+    <span class="drawer-label">Navegação</span>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="#expertise">Expertise</a>
+    <a href="#projetos">Projetos</a>
+    <a href="#stack">Stack</a>
+    <a href="#contato">Contato</a>
+  </nav>
+  <div class="drawer-footer">© 2025 TJT Tecnologia</div>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -886,6 +1020,30 @@
 </footer>
 
 <script>
+  // Hamburger / Drawer
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('overlay');
+  const drawerClose = document.getElementById('drawerClose');
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('visible');
+    hamburger.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('visible');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', () => drawer.classList.contains('open') ? closeDrawer() : openDrawer());
+  overlay.addEventListener('click', closeDrawer);
+  drawerClose.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.drawer-nav a').forEach(a => a.addEventListener('click', closeDrawer));
+
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
