@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiago — Desenvolvedor Full-Stack Laravel & PHP</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --accent: #c8a96e;
+    --accent2: #6eb5c8;
+    --text: #e8e0d4;
+    --muted: #6b6560;
+    --tag-bg: #181818;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.3;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 4rem 8rem 6rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    line-height: 1.05;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 440px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn {
+    padding: 0.9rem 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0a;
+  }
+  .btn-primary:hover { background: #d4b87a; transform: translateY(-2px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-visual {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 50%, rgba(200,169,110,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 20%, rgba(110,181,200,0.05) 0%, transparent 60%);
+  }
+
+  .code-block {
+    position: relative;
+    z-index: 2;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.9;
+    opacity: 0;
+    animation: fadeIn 1s 1s forwards;
+  }
+
+  .code-block::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .code-comment { color: var(--muted); }
+  .code-key { color: var(--accent2); }
+  .code-val { color: var(--accent); }
+  .code-str { color: #a8c896; }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+
+  /* SECTIONS */
+  section { padding: 7rem 0; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  /* EXPERTISE */
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .expertise-card {
+    background: var(--bg);
+    padding: 2.5rem 2rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .expertise-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.4s;
+  }
+  .expertise-card:hover::after { width: 100%; }
+  .expertise-card:hover { background: #0e0e0e; }
+
+  .expertise-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .expertise-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+  }
+
+  .expertise-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  /* PROJECTS */
+  .projects-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+  .project-item {
+    background: var(--bg);
+    padding: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    transition: background 0.3s;
+    cursor: default;
+  }
+  .project-item:hover { background: #0d0d0d; }
+
+  .project-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(200,169,110,0.3);
+    padding: 0.2rem 0.6rem;
+  }
+
+  .project-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .project-desc {
+    font-size: 0.87rem;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 600px;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    background: var(--tag-bg);
+    color: var(--muted);
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+  }
+
+  .project-arrow {
+    color: var(--border);
+    font-size: 1.5rem;
+    transition: color 0.3s;
+    margin-top: 0.3rem;
+  }
+  .project-item:hover .project-arrow { color: var(--accent); }
+
+  /* STACK */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .stack-item {
+    background: var(--bg);
+    padding: 1.8rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: background 0.3s;
+  }
+  .stack-item:hover { background: #0e0e0e; }
+
+  .stack-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .stack-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .stack-bar {
+    height: 2px;
+    background: var(--border);
+    margin-top: 0.3rem;
+    position: relative;
+  }
+
+  .stack-bar-fill {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    background: var(--accent);
+    transition: width 1.5s ease;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .contact-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-title em { font-style: italic; color: var(--accent); }
+
+  .contact-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  .contact-details { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .contact-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .contact-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .contact-value {
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .contact-value a { color: var(--accent); text-decoration: none; }
+  .contact-value a:hover { text-decoration: underline; }
+
+  /* FOOTER */
+  footer {
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { gap: 1.5rem; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 7rem 2rem 5rem; }
+    .container { padding: 0 2rem; }
+    .expertise-grid { grid-template-columns: 1fr; }
+    .stack-grid { grid-template-columns: repeat(2, 1fr); }
+    .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .project-item { grid-template-columns: 1fr; }
+    .project-arrow { display: none; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">TJT Tecnologia</div>
+  <div class="nav-links">
+    <a href="#expertise">Expertise</a>
+    <a href="#projetos">Projetos</a>
+    <a href="#stack">Stack</a>
+    <a href="#contato">Contato</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-label">// Desenvolvedor Full-Stack · Brasília, BR</div>
+    <h1 class="hero-name">
+      Construindo sistemas<br>
+      <em>que escalam.</em>
+    </h1>
+    <p class="hero-desc">
+        Desenvolvedor Full-Stack com sólida experiência em Laravel, PHP, React, Next.js, Node.js e WordPress — construindo desde sistemas empresariais complexos com integrações fiscais brasileiras (NF-e, SEFAZ), gateways de pagamento (Cielo, PIX, Conta Azul) e APIs de terceiros (Google, Meta, WhatsApp Business), até plataformas ERP, marketplaces, CRMs e infraestrutura cloud em AWS e Azure.
+    </p>
+    <div class="hero-cta">
+      <a href="#projetos" class="btn btn-primary">Ver Projetos</a>
+      <a href="#contato" class="btn btn-outline">Falar Comigo</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual"></div>
+    <div class="code-block">
+      <span class="code-comment">// stack principal</span><br>
+      <span class="code-key">framework</span>: <span class="code-val">'Laravel 10+'</span>,<br>
+      <span class="code-key">linguagem</span>: <span class="code-val">'PHP 8.2'</span>,<br>
+      <span class="code-key">frontend</span>: <span class="code-val">'Vue.js + React + Next.js'</span>,<br>
+      <span class="code-key">js_runtime</span>: <span class="code-val">'Node.js'</span>,<br>
+      <span class="code-key">cms</span>: <span class="code-val">'WordPress (custom themes)'</span>,<br>
+      <span class="code-key">cloud</span>: <span class="code-val">'AWS &amp; Azure'</span>,<br>
+      <span class="code-key">banco</span>: <span class="code-val">'MySQL + Redis'</span>,<br>
+      <br>
+      <span class="code-comment">// integrações</span><br>
+      <span class="code-key">nfe</span>: <span class="code-str">'Focus NFe / SEFAZ'</span>,<br>
+      <span class="code-key">payment</span>: <span class="code-str">'Cielo + PIX + Conta Azul'</span>,<br>
+      <span class="code-key">social</span>: <span class="code-str">'Google APIs + Meta APIs'</span>,<br>
+      <span class="code-key">whatsapp</span>: <span class="code-str">'Business API'</span>,<br>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Áreas de <em>Expertise</em></h2>
+    </div>
+    <div class="expertise-grid reveal">
+      <div class="expertise-card">
+        <div class="expertise-icon">⚙️</div>
+        <div class="expertise-title">Sistemas ERP & Empresariais</div>
+        <div class="expertise-desc">Desenvolvimento de plataformas completas com workflows de aprovação multi-nível, controle de acesso hierárquico, auditoria completa e automações de negócio.</div>
+      </div>
+      <div class="expertise-card">
+        <div class="expertise-icon">💳</div>
+        <div class="expertise-title">Gateways de Pagamento</div>
+        <div class="expertise-desc">Integrações com Cielo, PIX, boleto bancário e faturamento automático. Cobrança recorrente, conciliação financeira e relatórios de inadimplência.</div>
+      </div>
+      <div class="expertise-card">
+        <div class="expertise-icon">🧾</div>
+        <div class="expertise-title">Compliance Fiscal Brasileiro</div>
+        <div class="expertise-desc">Emissão de NF-e, NFS-e e NFC-e via Focus NFe e integração direta com SEFAZ. Automação de processos fiscais para e-commerce e marketplaces.</div>
+      </div>
+      <div class="expertise-card">
+        <div class="expertise-icon">🔗</div>
+        <div class="expertise-title">Integrações & APIs</div>
+        <div class="expertise-desc">OAuth2, WhatsApp Business API, Conta Azul, Google APIs, Meta (Facebook/Instagram), transportadoras (Braspress, FedEx), APIs governamentais e serviços externos com retry, filas e monitoramento.</div>
+      </div>
+      <div class="expertise-card">
+        <div class="expertise-icon">☁️</div>
+        <div class="expertise-title">Infraestrutura Cloud</div>
+        <div class="expertise-desc">Deploy e gestão de ambientes em AWS e Azure. Configuração de pipelines CI/CD, escalabilidade horizontal e otimização de custos em nuvem.</div>
+      </div>
+      <div class="expertise-card">
+        <div class="expertise-icon">📊</div>
+        <div class="expertise-title">Dashboards & Analytics</div>
+        <div class="expertise-desc">Painéis gerenciais em tempo real com gráficos interativos, KPIs configuráveis, relatórios exportáveis e análises avançadas de dados operacionais.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJETOS -->
+<section id="projetos">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Tipos de <em>Sistemas Desenvolvidos</em></h2>
+    </div>
+    <div class="projects-list reveal">
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">ERP / Fidelização</span>
+            <h3 class="project-name">Sistema de Fidelização Empresarial</h3>
+          </div>
+          <p class="project-desc">Plataforma empresarial completa com sistema de fidelização, gestão de clientes, automação de campanhas e painel administrativo multi-nível. Workflows de aprovação com notificações em tempo real via WebSocket e controle de acesso por perfil.</p>
+          <div class="project-tags">
+            <span class="tag">Laravel 10</span>
+            <span class="tag">Livewire</span>
+            <span class="tag">MySQL</span>
+            <span class="tag">Redis</span>
+            <span class="tag">WebSocket</span>
+            <span class="tag">Filas</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">GovTech / Gestão</span>
+            <h3 class="project-name">Plataforma de Gestão Hierárquica</h3>
+          </div>
+          <p class="project-desc">Sistema com controle hierárquico de acesso, dashboards analíticos, gerenciamento de demandas e relatórios gerenciais. Arquitetura multi-tenant com isolamento completo de dados por organização e auditoria de ações.</p>
+          <div class="project-tags">
+            <span class="tag">Laravel</span>
+            <span class="tag">Multi-tenant</span>
+            <span class="tag">Vue.js</span>
+            <span class="tag">Controle de Acesso</span>
+            <span class="tag">Auditoria</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">E-commerce / Marketplace</span>
+            <h3 class="project-name">Marketplace Multi-Vendedor com NF-e</h3>
+          </div>
+          <p class="project-desc">Marketplace com múltiplos vendedores, integração com gateway de pagamento, emissão automática de NF-e via SEFAZ, gestão de estoque e painel de sellers com relatórios de vendas e conciliação financeira.</p>
+          <div class="project-tags">
+            <span class="tag">Laravel</span>
+            <span class="tag">Cielo</span>
+            <span class="tag">Focus NFe</span>
+            <span class="tag">SEFAZ</span>
+            <span class="tag">PIX</span>
+            <span class="tag">Boleto</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">Logística / Transporte</span>
+            <h3 class="project-name">Sistema de Gestão Logística</h3>
+          </div>
+          <p class="project-desc">Integração com transportadoras para cálculo de frete, rastreamento de pedidos e gestão de despacho. Automação de cotações, geração de etiquetas e reconciliação de cobranças com painel de acompanhamento em tempo real.</p>
+          <div class="project-tags">
+            <span class="tag">Laravel</span>
+            <span class="tag">APIs Transportadoras</span>
+            <span class="tag">Filas</span>
+            <span class="tag">Webhooks</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">CRM / Comunicação</span>
+            <h3 class="project-name">Plataforma de Atendimento via WhatsApp</h3>
+          </div>
+          <p class="project-desc">Integração com WhatsApp Business API para automação de comunicação com clientes, chatbots, envio de notificações transacionais e gerenciamento de atendimento com dashboard de métricas e histórico de conversas.</p>
+          <div class="project-tags">
+            <span class="tag">Laravel</span>
+            <span class="tag">WhatsApp API</span>
+            <span class="tag">Webhooks</span>
+            <span class="tag">Filas Laravel</span>
+            <span class="tag">Notificações</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-item">
+        <div>
+          <div class="project-header">
+            <span class="project-type">Cloud / DevOps</span>
+            <h3 class="project-name">Infraestrutura Cloud AWS & Azure</h3>
+          </div>
+          <p class="project-desc">Gestão e configuração de ambientes de produção em AWS e Azure. Implementação de pipelines de deploy, monitoramento, backups automatizados e scripts Python para automação de operações e redução de custos de infraestrutura.</p>
+          <div class="project-tags">
+            <span class="tag">AWS</span>
+            <span class="tag">Azure</span>
+            <span class="tag">Python</span>
+            <span class="tag">CI/CD</span>
+            <span class="tag">Docker</span>
+            <span class="tag">Nginx</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- STACK -->
+<section id="stack">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Stack <em>Técnico</em></h2>
+    </div>
+    <div class="stack-grid reveal">
+      <div class="stack-item">
+        <div class="stack-name">PHP 8.2</div>
+        <div class="stack-level">Principal</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Laravel</div>
+        <div class="stack-level">Principal</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">MySQL</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Vue.js</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Redis</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Livewire</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">AWS / Azure</div>
+        <div class="stack-level">Intermediário+</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:72%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Python</div>
+        <div class="stack-level">Intermediário</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:65%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Docker</div>
+        <div class="stack-level">Intermediário</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:68%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">REST APIs</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">OAuth2 / JWT</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Git / CI-CD</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">React</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:83%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Next.js</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">JavaScript</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Node.js</div>
+        <div class="stack-level">Intermediário+</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:73%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">WordPress</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Django</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Figma</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-name">Automações</div>
+        <div class="stack-level">Avançado</div>
+        <div class="stack-bar"><div class="stack-bar-fill" style="width:82%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contato" class="contact-section">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <h2 class="contact-title">Vamos <em>construir</em> algo juntos?</h2>
+        <p class="contact-sub">Disponível para projetos freelance, contratos de médio/longo prazo e consultorias técnicas. Respondo em até 24 horas.</p>
+      </div>
+      <div class="contact-details reveal">
+        <div class="contact-row">
+          <span class="contact-label">Localização</span>
+          <span class="contact-value">Brasília — DF, Brasil</span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Disponibilidade</span>
+          <span class="contact-value">Projetos Freelance · Remote</span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Contatos</span>
+          <span class="contact-value">(61) 98311-1739 / (61) 986086560</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-text">© 2025 TJT Tecnologia · Desenvolvedor Full-Stack</span>
+  <span class="footer-text">Built with precision · Laravel &amp; beyond</span>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Animate stack bars on reveal
+  const stackItems = document.querySelectorAll('.stack-bar-fill');
+  stackItems.forEach(bar => {
+    const target = bar.style.width;
+    bar.style.width = '0';
+    const barObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => { bar.style.width = target; }, 300);
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    barObserver.observe(bar);
+  });
+</script>
+</body>
+</html>
